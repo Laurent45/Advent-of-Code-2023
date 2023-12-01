@@ -1,4 +1,4 @@
-rootProject.name = "advent-of-code-2023"
+rootProject.name = "Advent-of-Code-2023"
 
 dependencyResolutionManagement {
     repositories {
