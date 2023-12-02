@@ -50,24 +50,9 @@ class Day021(private val input: List<String>) {
 }
 
 class Day022(private val input: List<String>) {
-    private var colorByMinimum: Map<Color, Int>? = null
-
-    init {
-        colorByMinimum = this.input
-            .map(::colorByMinimumCube)
-            .flatMap { it.entries }
-            .groupBy({ it.key }, { it.value })
-            .mapValues { it.value.max() }
-    }
-
     fun computeMinimalCubesByColorByGame(): Int {
         return input
             .map(::colorByMinimumCube)
-            .filter {
-                it.entries.all { (color, n) ->
-                    n <= colorByMinimum?.get(color)!!
-                }
-            }
             .sumOf {
                 it.values.reduce { acc, i -> acc * i }
             }
