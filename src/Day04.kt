@@ -5,37 +5,45 @@ fun main() {
 
     fun part1(input: List<String>): Int {
         return input
-            .mapNotNull(::card)
-            .sumOf(Card::pointsWined)
+            .map(String::toCard)
+            .sumOf(Card::points)
     }
 
     fun part2(input: List<String>): Int {
-        return 0
+        return input
+            .map(String::toCard)
+            .totalScratchcards()
     }
 
-    // test if implementation meets criteria from the description, like:
     val testInputPart1 = readInput("Day04_part1_test")
     check(part1(testInputPart1) == expectedPart1)
-    val testInputPart2 = readInput("Day04_part2_test")
-    check(part2(testInputPart2) == expectedPart2)
-
     val inputParty1 = readInput("Day04_part1")
     part1(inputParty1).println()
-/*
+
+    val testInputPart2 = readInput("Day04_part2_test")
+    check(part2(testInputPart2) == expectedPart2)
     val inputParty2 = readInput("Day04_part2")
     part2(inputParty2).println()
-*/
 }
 
-data class Card(val id: Int, val winNumbers: List<Int>, val myNumbers: List<Int>)
+class Card(
+    private val winNumbers: List<Int>,
+    private val scratchNumbers: List<Int>,
+    var numbersOfCopy: Int = 1
+) {
 
-fun card(line: String): Card? {
-//    TODO("Check entire line with regex")
-    val cardId = Regex("""\d+""")
-        .find(line.substringBefore(":"))
-        ?.value ?: return null
+    val points: Int
+        get() = scratchNumbers
+            .filter { winNumbers.contains(it) }
+            .foldIndexed(0) { idx, acc, _ -> if (idx == 0) 1 else acc * 2 }
 
-    val numbers = line.substringAfter(": ").split(" | ")
+    val matchingNumbers: Int
+        get() = scratchNumbers.count { winNumbers.contains(it) }
+}
+
+fun String.toCard(): Card {
+    // Line example: Card 1: 41 48 83 86 17 | 83 86  6 31 17  9 48 53
+    val listOfNumbers = this.substringAfter(": ").split(" | ")
         .map {
             Regex("""\d+""")
                 .findAll(it)
@@ -43,13 +51,23 @@ fun card(line: String): Card? {
                 .map(String::toInt)
                 .toList()
         }
-        .toList()
+        .takeIf { it.size == 2 } ?: error("Invalid line $this")
 
-    return Card(cardId.toInt(), numbers[0], numbers[1])
+    return Card(listOfNumbers[0], listOfNumbers[1])
 }
 
-fun Card.pointsWined(): Int {
-    return myNumbers
-        .filter { winNumbers.contains(it) }
-        .foldIndexed(0) { idx, acc, _ -> if (idx == 0) 1 else acc * 2 }
+fun List<Card>.totalScratchcards(): Int {
+    var result = 0
+
+    for ((idx, cardCurrent) in this.withIndex()) {
+        val matchingNumber = cardCurrent.matchingNumbers
+
+        for (nextId in idx + 1..idx + matchingNumber) {
+            if (nextId == this.size) break
+            this[nextId].numbersOfCopy += cardCurrent.numbersOfCopy
+        }
+        result += cardCurrent.numbersOfCopy
+    }
+
+    return result
 }
