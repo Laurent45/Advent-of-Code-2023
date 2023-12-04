@@ -56,18 +56,10 @@ fun String.toCard(): Card {
     return Card(listOfNumbers[0], listOfNumbers[1])
 }
 
-fun List<Card>.totalScratchcards(): Int {
-    var result = 0
+fun List<Card>.totalScratchcards(): Int = this.mapIndexed { id, card ->
+        val matchingNumber = card.matchingNumbers
+        val rangeOfNextIds = (id + 1)..(id + matchingNumber).coerceAtMost(this.size - 1)
 
-    for ((idx, cardCurrent) in this.withIndex()) {
-        val matchingNumber = cardCurrent.matchingNumbers
-
-        for (nextId in idx + 1..idx + matchingNumber) {
-            if (nextId == this.size) break
-            this[nextId].numbersOfCopy += cardCurrent.numbersOfCopy
-        }
-        result += cardCurrent.numbersOfCopy
-    }
-
-    return result
-}
+        for (nextId in rangeOfNextIds) this[nextId].numbersOfCopy += card.numbersOfCopy
+        card.numbersOfCopy
+    }.sum()
