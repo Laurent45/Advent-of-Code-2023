@@ -43,17 +43,13 @@ class Card(
 
 fun String.toCard(): Card {
     // Line example: Card 1: 41 48 83 86 17 | 83 86  6 31 17  9 48 53
-    val listOfNumbers = this.substringAfter(": ").split(" | ")
-        .map {
-            Regex("""\d+""")
-                .findAll(it)
-                .map(MatchResult::value)
-                .map(String::toInt)
-                .toList()
-        }
-        .takeIf { it.size == 2 } ?: error("Invalid line $this")
+    val match = Regex("""Card\s+(\d+):(?<winningNumbers>[\s\d]+) \|(?<scratchNumbers>[\s\d]+)""")
+        .matchEntire(this) ?: error("Invalid card line $this")
 
-    return Card(listOfNumbers[0], listOfNumbers[1])
+    val winNumbers = match.groups["winningNumbers"]!!.value.toIntList()
+    val scratchNumbers = match.groups["scratchNumbers"]!!.value.toIntList()
+
+    return Card(winNumbers, scratchNumbers)
 }
 
 fun List<Card>.totalScratchcards(): Int = this.mapIndexed { id, card ->
@@ -63,3 +59,5 @@ fun List<Card>.totalScratchcards(): Int = this.mapIndexed { id, card ->
         for (nextId in rangeOfNextIds) this[nextId].numbersOfCopy += card.numbersOfCopy
         card.numbersOfCopy
     }.sum()
+
+fun String.toIntList():List<Int> = this.trimStart().split(Regex("""\s+""")) .map(String::toInt)
