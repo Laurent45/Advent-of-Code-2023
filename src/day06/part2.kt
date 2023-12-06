@@ -22,9 +22,5 @@ fun main() {
     println(maxSpeed - minSpeed + 1)
 }
 
-fun String.aggregateToLong(): Long = this
-    .substringAfter(":")
-    .split(" ")
-    .filter { it.isNotBlank() }
-    .fold(0L) { acc, string -> (acc * (10.0.pow(string.length).toLong())) + string.toLong() }
+fun String.aggregateToLong(): Long = this.substringAfter(":").filter(Char::isDigit).toLong()
 
