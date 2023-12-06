@@ -1,3 +1,8 @@
+package day03
+
+import println
+import readInput
+
 fun main() {
     fun part1(input: List<String>): Int {
         val (indexLineToNumbers, symbols) = input.parse { !it.isDigit() && !it.isLetter() && it != '.' }

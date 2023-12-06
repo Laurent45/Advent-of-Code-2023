@@ -1,3 +1,7 @@
+package day01
+
+import println
+import readInput
 import java.lang.StringBuilder
 
 fun main() {
