@@ -1,7 +1,6 @@
 package day09
 
 import readInput
-import kotlin.math.abs
 
 fun main() {
     readInput("Day09_part1").sumOf { history ->
