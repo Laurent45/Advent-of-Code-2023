@@ -3,6 +3,8 @@ package day10
 import println
 import readInput
 
+// test => 8
+// real => 6860
 
 fun main() {
 
